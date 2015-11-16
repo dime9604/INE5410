@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     int best_cost = 99999999;
     int s = 51;
 
-    MPI_Init(argc, argv);
+    MPI_Init(0, NULL);
 
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -111,8 +111,8 @@ int main(int argc, char *argv[]) {
             }
             int *temp_shortest_path = calloc(sizeof(int), s+1);
 
-            MPI_Recv(&temp_best_cost. 1. MPI_INT, node, 0, MPI_COMM_WORLD, &status);
-            MPI_Recv(&temp_shortest_path[0], s+1; MPI_INT, node, 0, MPI_COMM_WORLD, &status);
+            MPI_Recv(&temp_best_cost, 1, MPI_INT, node, 0, MPI_COMM_WORLD, &status);
+            MPI_Recv(&temp_shortest_path[0], s+1, MPI_INT, node, 0, MPI_COMM_WORLD, &status);
 
             if(temp_best_cost < best_cost) {
                 winner = node;
@@ -132,7 +132,7 @@ int main(int argc, char *argv[]) {
 	       tsp(matrix, c, 0, initial, initial, ok, 1, INT_MAX);
 
            MPI_Send(&best_cost, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-           MPI_Send(shortest_path, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+           MPI_Send(&shortest_path, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
            MPI_Recv(&best_cost, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
 
