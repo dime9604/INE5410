@@ -111,14 +111,13 @@ int main(int argc, char *argv[]) {
             int temp_shortest_path;
             //int* temp_shortest_path = malloc(sizeof(int) * (dimension +1));
 
-            //MPI_Recv(&temp_best_cost, 1, MPI_INT, node, 0, MPI_COMM_WORLD, &status);
+            MPI_Recv(&temp_best_cost, 1, MPI_INT, node, 0, MPI_COMM_WORLD, &status);
             MPI_Recv(&temp_shortest_path, 1, MPI_INT, node, 0, MPI_COMM_WORLD, &status);
             printf("shortest path %d\n", temp_shortest_path);
-            /*if(temp_best_cost < best_cost) {
+            if(temp_best_cost < best_cost) {
                 winner = node;
                 best_cost = temp_best_cost;
 
-            }*/
             if(temp_shortest_path < shortest_path) {
                 shortest_path = temp_shortest_path;
             }
@@ -130,14 +129,14 @@ int main(int argc, char *argv[]) {
 	       ok[i] = 1;
 
 
-           shortest_path = tsp(matrix, c, 0, i, i, ok, 1, shortest_path);
+           shortest_path = tsp(matrix, c, 0, i, i, ok, 1, best_cost);
 
-           //MPI_Send(&best_cost, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+           MPI_Send(&best_cost, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
            MPI_Send(&shortest_path, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
 
            printf("shortest_path %d\n", shortest_path);
-           //MPI_Recv(&best_cost, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+           MPI_Recv(&best_cost, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
 
         }
     }
