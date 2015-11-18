@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
 
     int rank, size;
 
-    int japan; // processes who have commited suicide
+    int killProcess; // informa se o processo morre
 
     MPI_Status status;
 
@@ -100,15 +100,15 @@ int main(int argc, char *argv[]) {
         total = 2;
         for (int target = 1; target < size; target++) {
             if (nextCity >= c) {
-                // MPI_SEND_SUICIDE - to not kill slave
-                japan = 0;
-                MPI_Send(&japan, 1, MPI_INT, target, 666, MPI_COMM_WORLD);
+                // MPI_SEND_KILL - kill slave
+                killProcess = 0;
+                MPI_Send(&killProcess, 1, MPI_INT, target, 666, MPI_COMM_WORLD);
                 numProcess--;
                 continue;
             }
-            // MPI_SEND_SUICIDE - to not kill slave
-            japan = 1;
-            MPI_Send(&japan, 1, MPI_INT, target, 666, MPI_COMM_WORLD);
+            // MPI_SEND_KILL - kill slave
+            killProcess = 1;
+            MPI_Send(&killProcess, 1, MPI_INT, target, 666, MPI_COMM_WORLD);
             // MPI_SEND_DATA
             MPI_Send(matrix, 51*51, MPI_INT, target, 0, MPI_COMM_WORLD);    // const
             MPI_Send(&c, 1, MPI_INT, target, 1, MPI_COMM_WORLD);            // const
@@ -126,22 +126,22 @@ int main(int argc, char *argv[]) {
         }
 
         while (numProcess > 1) {
-            // MPI_RECEIVE_ANSWER - recebe as respostas de Jebus (vulgo caminho mais curto)
+            // MPI_RECEIVE_ANSWER - recebe as respostas do caminho mais curto
             MPI_Recv(&tmpShort, 1, MPI_INT, MPI_ANY_SOURCE, 77, MPI_COMM_WORLD, &status);
             if (tmpShort < shortest) {
                 shortest = tmpShort;
             }
             if (nextCity >= c) {
-                // MPI_SEND_SUICIDE - to not kill slave
-                japan = 0;
-                MPI_Send(&japan, 1, MPI_INT, status.MPI_SOURCE, 666, MPI_COMM_WORLD);
+                // MPI_SEND_KILL - kill slave
+                killProcess = 0;
+                MPI_Send(&killProcess, 1, MPI_INT, status.MPI_SOURCE, 666, MPI_COMM_WORLD);
                 numProcess--;
                 continue;
             }
-            // MPI_SEND_SUICIDE - to not kill slave
-            japan = 1;
-            MPI_Send(&japan, 1, MPI_INT, status.MPI_SOURCE, 666, MPI_COMM_WORLD);
-            // MPI_SEND_DATA - envia daods pro cara (escravo) processar
+            // MPI_SEND_SILL - kill slave
+            killProcess = 1;
+            MPI_Send(&killProcess, 1, MPI_INT, status.MPI_SOURCE, 666, MPI_COMM_WORLD);
+            // MPI_SEND_DATA - envia daods pro slave processar
             distance = matrix[initial][nextCity];
             MPI_Send(&distance, 1, MPI_INT, status.MPI_SOURCE, 2, MPI_COMM_WORLD);
 
@@ -163,9 +163,9 @@ int main(int argc, char *argv[]) {
         MPI_Recv(&total, 1, MPI_INT, 0, 6, MPI_COMM_WORLD, &status);        // const
         while ("Uma frase inspiradora") {
             // MPI_RECEIVE_SUICIDE - kill them all
-            MPI_Recv(&japan, 1, MPI_INT, 0, 666, MPI_COMM_WORLD, &status);
-            if (!japan) {
-                // Allahu akbar
+            MPI_Recv(&killProcess, 1, MPI_INT, 0, 666, MPI_COMM_WORLD, &status);
+            if (!killProcess) {
+
                 break;
             }
             // MPI_RECEIVE_DATA
@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
             MPI_Recv(&current, 1, MPI_INT, 0, 4, MPI_COMM_WORLD, &status);
             MPI_Recv(ok, 51, MPI_INT, 0, 5, MPI_COMM_WORLD, &status);
             MPI_Recv(&shortest, 1, MPI_INT, 0, 7, MPI_COMM_WORLD, &status);
-            // jihad
+
             // arrumar parametros
             shortest_path = tsp(matrix, c, distance, initial, current, ok, total, shortest);
             // MPI_SEND_ANSWER - envia o shortest path
